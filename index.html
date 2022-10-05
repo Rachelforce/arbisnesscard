@@ -55,7 +55,7 @@
             }
         });
         function play() {
-            var audio = document.getElementById("audio");
+            var audio = new Audio("voice.mp3");
             audio.play();
         }
     </script>
@@ -163,7 +163,7 @@
             vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" cursor="rayOrigin: mouse" onclick="play()">
         <a-assets>
             <img id="card" src="./card.jpg"/>
-            <audio id="voice" src="voice.mp3" preload="auto"></audio>
+
             <a-asset-item id="head" src="./model.glb"></a-asset-item>
         </a-assets>
 
@@ -175,8 +175,7 @@
             <a-entity gltf-model="#head"
                       position = "0 0.2 0"
                       rotation="90 0 0"
-                      scale="2 2 2"
-                      sound="src: #voice; on:click">
+                      scale="2 2 2">
             </a-entity>
 
         </a-entity>
