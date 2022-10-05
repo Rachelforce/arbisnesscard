@@ -1,1 +1,187 @@
 
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.5/dist/mindar-image.prod.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.5/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+        var isVideoplaying = false;
+        const onFirstTagretFound = () => {
+            console.log("start onFirstTargetFound function");
+            play();
+
+        }
+
+        const animateOnTargetFound = () => {
+            console.log("Start Animation trigger");
+
+        }
+        const onEveryTargetFound = () => {
+            console.log("start onEveryTargetFound function");
+
+          //  entity.components.sound.playSound();
+
+        }
+        //Runs every time whent targer lost
+        const onTargetLost = () => {
+            console.log("start onTargetLost function");
+
+          //  entity.components.sound.pauseSound();
+
+        }
+        var isFirstTime = false;
+        AFRAME.registerComponent('mytarget', {
+            init: function () {
+                this.el.addEventListener('targetFound', event => {
+                    console.log("target found");
+                    if (!isFirstTime) {
+                        onFirstTagretFound();
+                        isFirstTime = true;
+                    }
+                    onEveryTargetFound();
+
+                    //const avatar = document.querySelector("#avatar");
+                    //avatar.emit("rotate");
+
+                });
+                this.el.addEventListener('targetLost', event => {
+                    console.log("target was lost");
+                    onTargetLost();
+                    // const avatar = document.querySelector("#avatar");
+                    // avatar.setAttribute("rotation", "0 0 0");
+                });
+            }
+        });
+        function play() {
+            var audio = document.getElementById("audio");
+            audio.play();
+        }
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .example-container {
+            overflow: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        #example-scanning-overlay {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: transparent;
+            z-index: 2;
+        }
+
+        @media (min-aspect-ratio: 1/1) {
+            #example-scanning-overlay .inner {
+                width: 50vh;
+                height: 50vh;
+            }
+        }
+
+        @media (max-aspect-ratio: 1/1) {
+            #example-scanning-overlay .inner {
+                width: 80vw;
+                height: 80vw;
+            }
+        }
+
+        #example-scanning-overlay .inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+
+            background: linear-gradient(to right, white 10px, transparent 10px) 0 0,
+            linear-gradient(to right, white 10px, transparent 10px) 0 100%,
+            linear-gradient(to left, white 10px, transparent 10px) 100% 0,
+            linear-gradient(to left, white 10px, transparent 10px) 100% 100%,
+            linear-gradient(to bottom, white 10px, transparent 10px) 0 0,
+            linear-gradient(to bottom, white 10px, transparent 10px) 100% 0,
+            linear-gradient(to top, white 10px, transparent 10px) 0 100%,
+            linear-gradient(to top, white 10px, transparent 10px) 100% 100%;
+            background-repeat: no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #example-scanning-overlay.hidden {
+            display: none;
+        }
+
+        #example-scanning-overlay img {
+            opacity: 0.6;
+            width: 90%;
+            align-self: center;
+        }
+
+        #example-scanning-overlay .inner .scanline {
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            background: white;
+            animation: move 2s linear infinite;
+        }
+
+        @keyframes move {
+            0%, 100% {
+                top: 0%
+            }
+            50% {
+                top: calc(100% - 10px)
+            }
+        }
+    </style>
+</head>
+<body>
+
+<audio id="audio" src="voice.mp3"></audio>
+
+<div class="example-container">
+    <div id="example-scanning-overlay" class="hidden">
+        <div class="inner">
+            <img src="./card.jpg"/>
+            <div class="scanline"></div>
+        </div>
+    </div>
+
+    <a-scene
+            mindar-image="imageTargetSrc: targets.mind; showStats: false; uiScanning: #example-scanning-overlay; filterMinCF:0.0001; filterBeta: 0.001;"
+            embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights"
+            vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" cursor="rayOrigin: mouse" onclick="play()">
+        <a-assets>
+            <img id="card" src="./card.jpg"/>
+            <audio id="voice" src="voice.mp3" preload="auto"></audio>
+            <a-asset-item id="head" src="./model.glb"></a-asset-item>
+        </a-assets>
+
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
+                  raycaster="far: 10000; objects: .clickable">
+        </a-camera>
+
+        <a-entity id="mytarget" mytarget mindar-image-target="targetIndex: 0">
+            <a-entity gltf-model="#head"
+                      position = "0 0.2 0"
+                      rotation="90 0 0"
+                      scale="2 2 2"
+                      sound="src: #voice; on:click">
+            </a-entity>
+
+        </a-entity>
+
+    </a-scene>
+</div>
+</body>
+</html>
